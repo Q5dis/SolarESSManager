@@ -1,6 +1,5 @@
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// 임시 더미 데이터 - 나중에 백엔드에서 받아올 데이터
 const DUMMY_ENERGY_DATA = [
   { time: '00:00', A가구: 12, B가구: 8 },
   { time: '03:00', A가구: 10, B가구: 6 },
@@ -21,22 +20,6 @@ const DUMMY_HOURLY_DATA = [
 ];
 
 function Statistics() {
-  // 나중에 백엔드 연결할 때 여기만 수정하면 됨!
-  // const [energyData, setEnergyData] = useState(DUMMY_ENERGY_DATA);
-  // const [hourlyData, setHourlyData] = useState(DUMMY_HOURLY_DATA);
-  // const [optimal, setOptimal] = useState({ A: 10, B: 3 });
-  
-  // useEffect(() => {
-  //   // 백엔드에서 데이터 가져오기
-  //   fetch('/api/energy-data')
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       setEnergyData(data.energyData);
-  //       setHourlyData(data.hourlyData);
-  //       setOptimal(data.optimal);
-  //     });
-  // }, []);
-
   const energyData = DUMMY_ENERGY_DATA;
   const hourlyData = DUMMY_HOURLY_DATA;
   const optimal = { A: 10, B: 3 };
@@ -54,81 +37,91 @@ function Statistics() {
         </p>
       </div>
 
-      {/* 가구별 에너지 보유량 차트 */}
-      <div style={{ 
-        backgroundColor: '#FFFFFF', 
-        padding: '20px',
-        marginBottom: '20px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ 
-          fontSize: '18px', 
-          fontWeight: 'bold', 
-          marginBottom: '20px',
-          color: '#333'
-        }}>
-          가구별 에너지 보유량 차트
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={energyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
-            <YAxis label={{ value: 'Watt', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="A가구" fill="#FFD900" />
-            <Bar dataKey="B가구" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
+      <div style={{ marginBottom: '60px', padding: '20px', backgroundColor: '#f8f9fa' }}>
+        <p style={{ fontSize: '16px', color: '#666', marginBottom: '10px' }}>
+          아두이노 연결 완료!
+        </p>
+        <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#333' }}>
+          실시간 일사량 정보 10 MJ/㎡
+        </p>
       </div>
 
-      {/* 시간대별 에너지 축적량 차트 */}
-      <div style={{ 
-        backgroundColor: '#FFFFFF', 
-        padding: '20px',
-        marginBottom: '20px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{ 
-          fontSize: '18px', 
-          fontWeight: 'bold', 
-          marginBottom: '20px',
-          color: '#333'
+      {/* 차트 2개 나란히 배치 */}
+      <div style={{ display: 'flex', gap: '20px' }}>
+        {/* 가구별 에너지 보유량 차트 */}
+        <div style={{ 
+          flex: 1,
+          backgroundColor: '#FFFFFF', 
+          padding: '20px'
         }}>
-          시간대별 에너지 축적량 차트 (오늘 vs 어제)
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={hourlyData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="hour" />
-            <YAxis label={{ value: 'Watt', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            <Line 
-              type="monotone" 
-              dataKey="오늘" 
-              stroke="#FFD900" 
-              strokeWidth={3}
-              dot={{ r: 5 }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="어제" 
-              stroke="#DCDCDC" 
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={{ r: 4 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-        <p style={{ 
-          marginTop: '10px', 
-          fontSize: '14px', 
-          color: '#666',
-          textAlign: 'center'
+          <h2 style={{ 
+            fontSize: '18px', 
+            fontWeight: 'bold', 
+            marginBottom: '20px',
+            color: '#333'
+          }}>
+            가구별 에너지 보유량 차트
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={energyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis label={{ value: 'Watt', angle: -90, position: 'insideLeft' }} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="A가구" fill="#FFD900" />
+              <Bar dataKey="B가구" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* 시간대별 에너지 축적량 차트 */}
+        <div style={{ 
+          flex: 1,
+          backgroundColor: '#FFFFFF', 
+          padding: '20px'
         }}>
-          * 매일 00시에 초기화됩니다
-        </p>
+          <h2 style={{ 
+            fontSize: '18px', 
+            fontWeight: 'bold', 
+            marginBottom: '20px',
+            color: '#333'
+          }}>
+            시간대별 에너지 축적량 차트 (오늘 vs 어제)
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={hourlyData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="hour" />
+              <YAxis label={{ value: 'Watt', angle: -90, position: 'insideLeft' }} />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="오늘" 
+                stroke="#FFD900" 
+                strokeWidth={3}
+                dot={{ r: 5 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="어제" 
+                stroke="#DCDCDC" 
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+          <p style={{ 
+            marginTop: '10px', 
+            fontSize: '14px', 
+            color: '#666',
+            textAlign: 'center'
+          }}>
+            * 매일 00시에 초기화됩니다
+          </p>
+        </div>
       </div>
     </div>
   );

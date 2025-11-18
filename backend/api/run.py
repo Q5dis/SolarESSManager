@@ -16,9 +16,9 @@ socketio.init_app(app, async_mode=app.config['ASYNC_MODE'],
 #    아래 코드를 실행하라는 의미
 if __name__ == '__main__':
     
-    print(f"Starting SocketIO server on http://0.0.0.0:5000")
+    print(f"Starting SocketIO server on http://0.0.0.0:5001")
     
     # 3-1. [중요] Flask-SocketIO를 사용할 때는 'app.run()' 대신
     # 'socketio.run(app)'을 사용해야 웹소켓 서버가 정상적으로 작동합니다.
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000, 
+    socketio.run(app, debug=True, host='0.0.0.0', port=5001, 
                 allow_unsafe_werkzeug=True) # Werkzeug 3.0+ 호환성 문제 해결

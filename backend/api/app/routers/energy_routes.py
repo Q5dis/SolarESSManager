@@ -34,14 +34,14 @@ def predict_generation():
             return jsonify({"message": "DB 연결 실패"}), 500
         
         sql = """
-            SELECT 
+            SELECT
                 YEAR(timestamp) as year,
                 MONTH(timestamp) as month,
                 DAY(timestamp) as day,
-                HOUR(timestamp) as hour,
-                generation_amount as generation,
-                LAG(generation_amount, 1) OVER (ORDER BY timestamp) as prev_generation,
-                LAG(generation_amount, 24) OVER (ORDER BY timestamp) as yesterday_generation,
+                HOUR(timestamp) as time,
+                solar_w as generation,
+                LAG(solar_w, 1) OVER (ORDER BY timestamp) as prev_generation,
+                LAG(solar_w, 24) OVER (ORDER BY timestamp) as yesterday_generation,
                 lux
             FROM sun_data
             ORDER BY timestamp DESC
@@ -50,12 +50,13 @@ def predict_generation():
         cursor.execute(sql)
         latest_data = cursor.fetchone()
 
-        # 일사량 데이터로 변환
-        latest_data["insolation"] = lux_to_insolation(latest_data["lux"])
-
         if not latest_data:
             return jsonify({"message": "No data found"}), 404
-        
+
+        # 일사량 데이터로 변환
+        latest_data["insolation"] = lux_to_insolation(latest_data["lux"])
+        del latest_data["lux"]  # lux 제거
+
         # DataFrame으로 변환
         X = pd.DataFrame([latest_data])
 
@@ -63,10 +64,11 @@ def predict_generation():
         y = model.predict(X)
 
         # 결과 출력 딕셔너리 생성
+        # y shape : (1, 3) - 첫 번째 차원은 샘플, 두 번째는 1h/2h/3h 예측
         result = {
-            "1h": round(float(y[0]), 2),
-            "2h": round(float(y[1]), 2),
-            "3h": round(float(y[2]), 2)
+            "1h": round(float(y[0][0]), 2),
+            "2h": round(float(y[0][1]), 2),
+            "3h": round(float(y[0][2]), 2)
         }
 
         # 결과 반환

@@ -34,7 +34,7 @@ def available_channels():
         # 채널만 리스트로 추출
         selected_channels = [relay["relay_name"] for relay in active_relays]
 
-        result = get_available_channels(battery=sensor_data["soc"], power=sensor_data["solaw_w"], selected_channels=selected_channels)
+        result = get_available_channels(battery=sensor_data["soc"], power=sensor_data["solar_w"], selected_channels=selected_channels)
 
         return jsonify(result), 200
 
@@ -65,7 +65,7 @@ def optimal_combination():
         cursor.execute(sql)
         sensor_data = cursor.fetchone()
 
-        result = get_optimal_combination(battery=sensor_data["soc"], power=sensor_data["solaw_w"])
+        result = get_optimal_combination(battery=sensor_data["soc"], power=sensor_data["solar_w"])
 
         return jsonify({'channels': result}), 200
 

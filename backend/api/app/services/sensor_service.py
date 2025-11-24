@@ -17,7 +17,7 @@ def get_latest_sensor_data():
             return None, "최신 센서 데이터 조회 : DB 연결 실패", 503
         
         # 데이터 조회
-        sql = "SELECT * FROM sun_data ORDER BY timestamp DESC LIMIT 1"
+        sql = "SELECT * FROM sun_data_realtime ORDER BY timestamp DESC LIMIT 1"
         cursor.execute(sql)
         sensor_data = cursor.fetchone()
 
@@ -51,7 +51,7 @@ def save_sensor_data(soc, solar_w, lux):
         now = datetime.now()
 
         # 데이터 저장
-        sql = "INSERT INTO sun_data (soc, solar_w, lux, timestamp) VALUES (%s, %s, %s, %s)"
+        sql = "INSERT INTO sun_data_realtime (soc, solar_w, lux, timestamp) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (soc, solar_w, lux, now))
         conn.commit()
 

@@ -77,7 +77,7 @@ def get_optimal_combination(battery, power, channel_config=None, duration_minute
 
         # 최적 조합 선택 (가장 많은 채널 활성화 -> 더 큰 전력 소비 기준)
         if not valid_combinations:
-            print("판매 가능한 채널이 없습니다.")
+            print("최적 조합 추천 : 판매 가능한 채널이 없습니다.")
             return [], None, 200
 
         best = max(valid_combinations, key=lambda x: (len(x["channels"]), x["power"]))

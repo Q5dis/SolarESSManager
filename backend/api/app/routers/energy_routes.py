@@ -6,7 +6,7 @@ from app.services.energy_service import get_latest_sensor_data_for_model, predic
 energy_bp = Blueprint("energy", __name__)
 
 # 모델 예측 API
-@energy_bp.route("/api/energy/predict", methods=["post"])
+@energy_bp.route("/api/energy/predict", methods=["POST"])
 def predict_generation():
     """
     1h, 2h, 3h 뒤 발전량 예측

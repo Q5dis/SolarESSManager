@@ -1,4 +1,4 @@
-from app.db import get_connection, close_connection
+from app.services.common_service import db_transaction, handle_errors
 import traceback, pickle
 import pandas as pd
 from pathlib import Path
@@ -22,19 +22,12 @@ def lux_to_insolation(lux):
     return mj
 
 # 모델 예측용 데이터 조회
+@handle_errors("모델 예측")
 def get_latest_sensor_data_for_model():
     """
     DB에서 모델 예측용 최신 태양광 데이터 조회
     """
-    # DB에서 데이터 조회
-    conn, cursor = None, None
-    try:
-        # DB 연결
-        conn, cursor = get_connection()
-        if conn is None:
-            print("모델 예측 : DB 연결 실패")
-            return None, "모델 예측 : DB 연결 실패", 503
-
+    with db_transaction() as (_, cursor):
         # 현재 데이터(year, month, day, time, generation, lux)
         sql_current = """
             SELECT
@@ -83,14 +76,6 @@ def get_latest_sensor_data_for_model():
         current_data["yesterday_generation"] = yesterday_data["avg_solar_w"]
 
         return current_data, None, 200
-
-    except Exception as e:
-        print(f"모델 예측 서버 오류 : {e}")
-        traceback.print_exc()
-        return None, "모델 예측 : 서버 오류 발생", 500
-    
-    finally:
-        close_connection(conn, cursor)
 
 # 예측 모델 실행
 def predict_solar_generation(data):

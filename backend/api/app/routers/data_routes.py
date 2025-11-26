@@ -44,7 +44,10 @@ def receive_sun_data():
     _, message, status_code = save_sensor_data(soc, solar_w, lux)
 
     # 성공 응답 반환
-    return jsonify({"message": message}), status_code
+    if message:
+        return jsonify({"message": message}), status_code
+    else:
+        return jsonify({"success": True}), status_code
 
 # 거래 내역 조회
 @data_bp.route("/api/data/history", methods=["GET"])

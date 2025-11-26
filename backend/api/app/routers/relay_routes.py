@@ -61,10 +61,10 @@ def control_relay():
 
     # 아두이노에 릴레이 제어 전송
     success, message, status_code = send_to_arduino(data, arduino_url)
-    if not success:
+    if message:
         return jsonify({"message": message}), status_code
-
-    return jsonify({"message": "success"}), 200
+    else:
+        return jsonify({"success": success}), 200
 
 # === [GET] /api/relay/status ===
 # 기능: 웹(프론트엔드)이 페이지에 처음 접속할 때,

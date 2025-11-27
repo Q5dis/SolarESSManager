@@ -31,8 +31,8 @@ def available_channels():
     )
     if message:
         return jsonify({"message": message}), status_code
-
-    return jsonify(result), 200
+    else:
+        return jsonify(result), 200
 
 # 최적 판매 조합 추천
 @channels_bp.route("/api/channels/optimal", methods=["POST"])
@@ -52,5 +52,5 @@ def optimal_combination():
     )
     if message:
         return jsonify({"message": message}), status_code
-
-    return jsonify({'channels': result}), 200
+    else:
+        return jsonify({'channels': result}), 200

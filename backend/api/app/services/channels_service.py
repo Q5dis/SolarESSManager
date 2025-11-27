@@ -52,7 +52,7 @@ def get_optimal_combination(battery, power, channel_config=None, duration_minute
         available_power, channel_config, _ = _init_power(battery, power, channel_config, duration_minutes)
 
         # 모든 조합 생성
-        channels = ["A", "B", "C", "D"]
+        channels = [ch for ch in config["channel_config"]]
         all_combinations = []
 
         # 1개 ~ 4개 조합 생성
@@ -116,7 +116,7 @@ def get_available_channels(battery, power, selected_channels=[], channel_config=
         if battery < battery_protection_threshold:
             print(f"배터리 잔량이 {battery_protection_threshold} % 미만이므로 판매가 불가합니다.")
             return {
-                "A": True,
+                "A": False,
                 "B": False,
                 "C": False,
                 "D": False

@@ -1,4 +1,3 @@
-# ---필요한 모듈 임포트 ---
 from flask import Blueprint, jsonify, request
 from app.services.relay_service import (
     update_relay_status_in_db,
@@ -14,7 +13,7 @@ import os
 load_dotenv()
 
 # env 변수 가져오기
-arduino_url = os.getenv("ARDUINO_URL")
+ARDUINO_URL = os.getenv("ARDUINO_URL")
 
 # Blueprint 생성
 relay_bp = Blueprint('relay', __name__)
@@ -27,8 +26,8 @@ def control_relay():
 
     # 데이터 유효성 검사
     if not data or "A" not in data or "B" not in data or "C" not in data or "D" not in data:
-        print("릴레이 유효성 검사 : 필수 데이터 누락")
-        return jsonify({"message": "필수 데이터가 누락되었습니다."}), 400
+        print("\n릴레이 유효성 검사 : 필수 데이터 누락")
+        return jsonify({"message": "Relay : Missing required fields"}), 400
 
     # 현재 릴레이 상태 조회
     current_status, message, status_code = get_current_relay_status()
@@ -52,19 +51,20 @@ def control_relay():
                 # DB에 거래 내역 저장
                 success, msg, _ = insert_trade_history(buyer_id, amount)
                 if not success:
-                    print(f"거래 내역 저장 실패 ({channel}) : {msg}")
+                    print(f"저장 실패 : ({channel}) / {msg}")
                 else:
-                    print(f"거래 내역 저장 성공 ({channel}) : {amount}W")
+                    print(f"성공 내역 : ({channel}) / {amount}W")
             else:
-                print("릴레이 제어 : 필수 데이터 입력값 오류")
-                return jsonify({"message": "필수 데이터 입력값 오류"}), 400
+                print("\n릴레이 제어 : 필수 데이터 입력값 오류")
+                return jsonify({"message": "Invalid input values"}), 400
 
     # 아두이노에 릴레이 제어 전송
-    success, message, status_code = send_to_arduino(data, arduino_url)
+    success, message, status_code = send_to_arduino(data, ARDUINO_URL)
     if message:
         return jsonify({"message": message}), status_code
     else:
-        return jsonify({"success": success}), 200
+        print("\n릴레이 제어 : 제어 성공")
+        return jsonify({"success": success}), status_code
 
 # === [GET] /api/relay/status ===
 # 기능: 웹(프론트엔드)이 페이지에 처음 접속할 때,
@@ -80,4 +80,4 @@ def get_all_relay_status():
     # 결과 가공 (JSON 형식 변경)
     status_map = {key: (value == "on") for key, value in current_status.items()}
 
-    return jsonify(status_map), 200
+    return jsonify(status_map), status_code

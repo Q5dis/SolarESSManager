@@ -5,7 +5,7 @@ from pathlib import Path
 from functools import lru_cache
 
 # 모델 불러오기
-MODEL_PATH = Path(__file__).parent.parent.parent.parent / "models" / "rf_best_model.pkl"
+MODEL_PATH = Path(__file__).parent.parent.parent.parent / "models" / "rf_production_model.pkl"
 
 # 모델 사용시에만 로드
 @lru_cache(maxsize=1)
@@ -15,11 +15,11 @@ def _load_model():
     @lru_cache으로 모델 로드 캐시 저장
     """
     if not MODEL_PATH.exists():
-        print("모델 파일 없음")
-        raise FileNotFoundError("모델 파일 없음")
+        print("\n모델 예측 : 모델 파일 없음")
+        raise FileNotFoundError("Model Prediction : Model not found")
     
     with open(MODEL_PATH, "rb") as f:
-        print("모델 로드 성공")
+        print("\n모델 예측 : 모델 로드 성공\n")
         return pickle.load(f)
 
 # lux -> 일사량 변환
@@ -29,7 +29,7 @@ def lux_to_insolation(lux):
     return mj
 
 # 모델 예측용 데이터 조회
-@handle_errors("모델 예측")
+@handle_errors("Model Prediction")
 def get_latest_sensor_data_for_model():
     """
     DB에서 모델 예측용 최신 태양광 데이터 조회
@@ -76,7 +76,7 @@ def get_latest_sensor_data_for_model():
         # 데이터 확인
         if not current_data or not prev_data or not yesterday_data:
             print("모델 예측 : 데이터가 존재하지 않습니다.")
-            return None, "모델 예측 : 데이터가 존재하지 않습니다.", 404
+            return None, "Model Prediction : Data not found", 404
         
         # 데이터 결합
         current_data["prev_generation"] = prev_data["solar_w"]
@@ -114,10 +114,10 @@ def predict_solar_generation(data):
         }
 
         # 결과 반환
-        print(f"모델 예측 : 성공 - {result}")
+        print(f"\n모델 예측 : 성공 - {result}")
         return result, None, 200
     
     except Exception as e:
-        print(f"모델 예측 : 오류 - {e}")
+        print(f"\n모델 예측 : 오류 - {e}")
         traceback.print_exc()
-        return None, "모델 예측 : 실패", 500
+        return None, "Model Prediction : Prediction failed", 500

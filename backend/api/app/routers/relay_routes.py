@@ -20,8 +20,8 @@ relay_bp = Blueprint('relay', __name__)
 
 # === [POST] /api/relay/control  ===
 # 기능: 웹(프론트엔드)에서 A, B, C, D 릴레이 상태를 한꺼번에 제어
-@relay_bp.route("/api/relay/control", methods=["POST"])
-def control_relay():
+@relay_bp.route("/api/relay/save", methods=["POST"])
+def save_relay():
     data = request.get_json() # 웹에서 보낸 JSON 수신 (예: {"A": true, "B": false, ...})
 
     # 데이터 유효성 검사
@@ -80,4 +80,32 @@ def get_all_relay_status():
     # 결과 가공 (JSON 형식 변경)
     status_map = {key: (value == "on") for key, value in current_status.items()}
 
+    return jsonify(status_map), status_code
+
+@relay_bp.route("/api/relay/control", methods=["POST"])
+def control_relay():
+    data = request.get_json() # 웹에서 보낸 JSON 수신 (예: {"A": true, "B": false, ...})
+
+    # 데이터 유효성 검사
+    if not data or "A" not in data or "B" not in data or "C" not in data or "D" not in data:
+        print("\n릴레이 유효성 검사 : 필수 데이터 누락")
+        return jsonify({"message": "Relay : Missing required fields"}), 400
+
+    # 아두이노에 릴레이 제어 전송 (기존 방식 - 주석 처리)
+    # success, message, status_code = send_to_arduino(data, ARDUINO_URL)
+    # if message:
+    #     return jsonify({"message": message}), status_code
+    # else:
+    #     print("\n릴레이 제어 : 제어 성공")
+    #     return jsonify({"success": success}), status_code
+
+    # 아두이노에 DB 상태 응답 (Polling 방식)
+    current_status, message, status_code = get_current_relay_status()
+    if current_status is None:
+        return jsonify({"message": message}), status_code
+
+    # 결과 가공 (JSON 형식 변경)
+    status_map = {key: (value == "on") for key, value in current_status.items()}
+
+    print("\n릴레이 제어 : DB 상태 응답 전송")
     return jsonify(status_map), status_code

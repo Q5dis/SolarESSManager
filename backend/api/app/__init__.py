@@ -30,12 +30,12 @@ def create_app():
     from app.routers.data_routes import data_bp
     from app.routers.relay_routes import relay_bp
     from app.routers.channels_routes import channels_bp
-    # from app.routers.energy_routes import energy_bp
+    from app.routers.energy_routes import energy_bp
 
     app.register_blueprint(data_bp)
     app.register_blueprint(relay_bp)
     app.register_blueprint(channels_bp) 
-    #app.register_blueprint(energy_bp) 
+    app.register_blueprint(energy_bp) 
 
     # 스케줄러 설정 (리로더 프로세스에서만 실행)
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":

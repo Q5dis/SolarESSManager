@@ -2,7 +2,7 @@ from app.services.common_service import db_transaction, handle_errors
 from datetime import datetime
 
 # 최신 센서 데이터 조회
-@handle_errors("최신 센서 데이터 조회")
+@handle_errors("Sensor Data")
 def get_latest_sensor_data():
     """
     최신 센서 데이터 조회
@@ -14,13 +14,14 @@ def get_latest_sensor_data():
         sensor_data = cursor.fetchone()
 
         if not sensor_data:
-            print("최신 센서 데이터 조회 : 데이터가 존재하지 않습니다.")
-            return None, "최신 센서 데이터 조회 : 데이터가 존재하지 않습니다.", 404
+            print("\n최신 센서 데이터 조회 : 데이터가 존재하지 않습니다.")
+            return None, "Sensor Data : Data not found", 404
 
+        print("\n최신 센서 데이터 조회 : 조회 성공")
         return sensor_data, None, 200
         
 # 센서 데이터 DB에 저장
-@handle_errors("센서 데이터 저장")
+@handle_errors("Sensor Data")
 def save_sensor_data(soc, solar_w, lux):
     """
     센서 데이터 DB에 저장
@@ -33,11 +34,11 @@ def save_sensor_data(soc, solar_w, lux):
         sql = "INSERT INTO sun_data_realtime (soc, solar_w, lux, timestamp) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (soc, solar_w, lux, now))
 
-        print("센서 데이터 저장 : 성공")
+        print("\n아두이노 데이터 수신 : 저장 성공")
         return True, None, 201
 
 # 일정 시간 이후 데이터를 1시간 평균으로 저장
-@handle_errors("데이터 집계")
+@handle_errors("Sensor Data")
 def aggregate_old_data():
     """
     일정 시간 이후 데이터를 1시간 평균으로 집계하여 저장
@@ -72,5 +73,5 @@ def aggregate_old_data():
         cursor.execute(sql_select, (hours-1,))
         cursor.execute(sql_delete, (hours-1,))
 
-        print("데이터 집계 : 성공")
+        print("\n데이터 집계 : 성공")
         return True, None, 201

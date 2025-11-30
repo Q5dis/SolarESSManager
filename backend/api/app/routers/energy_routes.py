@@ -1,4 +1,3 @@
-# 모델 예측 API
 from flask import Blueprint, jsonify
 from app.services.energy_service import get_latest_sensor_data_for_model, predict_solar_generation
 
@@ -21,4 +20,4 @@ def predict_generation():
     if result is None:
         return jsonify({"message": message}), status_code
 
-    return jsonify(result), 200
+    return jsonify(result), status_code

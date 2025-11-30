@@ -1,4 +1,3 @@
-# 최적조합 추천 및 선택가능 채널 확인 로직 API
 from flask import Blueprint, jsonify
 from app.services.sensor_service import get_latest_sensor_data
 from app.services.relay_service import get_active_relay_list
@@ -32,7 +31,8 @@ def available_channels():
     if message:
         return jsonify({"message": message}), status_code
     else:
-        return jsonify(result), 200
+        print("\n판매 가능 채널 조회 : 조회 성공")
+        return jsonify(result), status_code
 
 # 최적 판매 조합 추천
 @channels_bp.route("/api/channels/optimal", methods=["POST"])
@@ -53,4 +53,5 @@ def optimal_combination():
     if message:
         return jsonify({"message": message}), status_code
     else:
-        return jsonify({'channels': result}), 200
+        print("\n최적 조합 추천 : 추천 성공")
+        return jsonify({'channels': result}), status_code

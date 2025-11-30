@@ -1,4 +1,3 @@
-# ---필요한 모듈 임포트 ---
 from flask import Blueprint, jsonify, request
 from app.services.sensor_service import get_latest_sensor_data, save_sensor_data
 from app.services.relay_service import get_trade_history
@@ -14,8 +13,8 @@ def get_latest_status():
         sensor_data, message, status_code = get_latest_sensor_data()
         if sensor_data is None:
             return jsonify({"message": message}), status_code
-        
-        return jsonify(sensor_data), 200
+
+        return jsonify(sensor_data), status_code
 
 # 아두이노 데이터 받아서 DB에 저장
 @data_bp.route('/api/data/solar', methods=['POST'])
@@ -34,10 +33,10 @@ def receive_sun_data():
     # 데이터 유효성 검사
     if soc is None or solar_w is None or lux is None:
         print("아두이노 데이터 수신 : 필수 데이터 누락")
-        return jsonify({"message": "필수 데이터가 누락되었습니다."}), 400
+        return jsonify({"message": "Missing required fields"}), 400
     if not (0 <= soc <= 100) or solar_w < 0 or lux < 0:
         print("아두이노 데이터 수신 : 필수 데이터 입력값 오류")
-        return jsonify({"message": "필수 데이터 입력값 오류"}), 400
+        return jsonify({"message": "Invalid input values"}), 400
     
     print(f"\nSOC: {soc}%, 전력: {solar_w}W, 조도: {lux}lux")
 
@@ -66,4 +65,5 @@ def get_trade_history_route():
     if result is None:
         return jsonify({"message": message}), status_code
 
+    print("\n거래 내역 조회 : 조회 성공")
     return jsonify(result), status_code

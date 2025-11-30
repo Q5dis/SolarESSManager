@@ -10,7 +10,7 @@ try:
     with open(CONFIG_PATH, "r") as f:
         CHANNEL_CONFIG = json.load(f)["channel_config"]
 except Exception as e:
-    print(f"config 읽기 오류 - {e}")
+    print(f"\nconfig 읽기 오류 - {e}")
     CHANNEL_CONFIG = {}
 
 # 채널명을 buyer_id로 변환
@@ -42,9 +42,9 @@ def handle_errors(context): # 데코레이터 생성
             except DBException as e:
                 return False, e.message, e.status_code
             except Exception as e:
-                print(f"{context} : 오류 - {e}")
+                print(f"\n{context} : 오류 - {e}")
                 traceback.print_exc()
-                return False, f"{context} : 서버 오류 발생", 500
+                return False, f"{context} : Internal server error", 500
         return wrapper
     return decorator
 
@@ -59,8 +59,8 @@ def db_transaction():
     try:
         conn, cursor = get_connection()
         if conn is None:
-            print("DB 연결 실패")
-            raise DBException("DB 연결 실패", 503)
+            print("\nDB 연결 실패")
+            raise DBException("Database Error : Connection failed", 503)
         # 함수 일시 정지(with as로 변수 전달)
         yield conn, cursor 
         # 항상 커밋 실행
@@ -69,10 +69,10 @@ def db_transaction():
     except DBException:
         raise
     except Exception as e:
-        print(f"DB 오류 : {e}")
+        print(f"\nDB 오류 : {e}")
         if conn:
             conn.rollback() # 에러 발생 시 롤백
-        raise DBException(f"DB 오류 : {e}", 500)
+        raise DBException(f"Database Error : {e}", 500)
 
     finally:
         close_connection(conn, cursor)

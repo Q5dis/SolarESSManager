@@ -1,4 +1,4 @@
-from app.services.common_service import db_transaction, handle_errors
+from app.services.common_service import db_transaction, handle_errors, get_buyer_id_from_channel, CHANNEL_CONFIG
 import requests
 
 # DB에 릴레이 상태 저장 함수
@@ -140,3 +140,29 @@ def reset_relay():
     if success:
         print("\n릴레이 제어 : 릴레이 초기화 완료\n")
     return success, message, status_code
+
+# 거래 내역 DB에 저장
+def save_relay_state_changes(data, current_status):
+    """
+    릴레이 변경 사항(OFF -> ON)을 DB에 저장
+    """
+    for channel, new_state in data.items():
+        old_state = current_status.get(channel, "off")
+        if old_state == "off" and new_state == True:
+            # 채널명을 buyer_id로 변환
+            buyer_id = get_buyer_id_from_channel(channel)
+            # 채널별 소비전력 조회
+            amount = CHANNEL_CONFIG.get(channel)
+            if buyer_id in [1,2,3,4] and amount >= 0:
+                # DB에 거래 내역 저장
+                success, message, status_code = insert_trade_history(buyer_id, amount)
+                if not success:
+                    print(f"저장 실패 : ({channel}) / {message}")
+                    return success, message, status_code
+                else:
+                    print(f"성공 내역 : ({channel}) / {amount}W")
+            else:
+                print("\n릴레이 제어 : 필수 데이터 입력값 오류")
+                return False, "Invalid input values", 400
+    print("\n릴레이 제어 : 저장 완료")
+    return True, "Relay state updated successfully", 201

@@ -1,27 +1,16 @@
 from flask import Blueprint, jsonify, request
 from app.services.relay_service import (
     update_relay_status_in_db,
-    insert_trade_history,
     get_current_relay_status,
-    send_to_arduino
+    save_relay_state_changes
 )
-from app.services.common_service import get_buyer_id_from_channel, CHANNEL_CONFIG
-from dotenv import load_dotenv
-import os
-
-# .env 파일 로드
-load_dotenv()
-
-# env 변수 가져오기
-ARDUINO_URL = os.getenv("ARDUINO_URL")
 
 # Blueprint 생성
 relay_bp = Blueprint('relay', __name__)
 
-# === [POST] /api/relay/control  ===
-# 기능: 웹(프론트엔드)에서 A, B, C, D 릴레이 상태를 한꺼번에 제어
-@relay_bp.route("/api/relay/save", methods=["POST"])
-def save_relay():
+# 웹에서 릴레이 채널 제어 정보를 받아 DB에 업데이트 및 거래 내역 저장
+@relay_bp.route("/api/relay/update", methods=["POST"])
+def update_relay():
     data = request.get_json() # 웹에서 보낸 JSON 수신 (예: {"A": true, "B": false, ...})
 
     # 데이터 유효성 검사
@@ -39,32 +28,10 @@ def save_relay():
     if not success:
         return jsonify({"message": message}), status_code
     
-    # OFF -> ON 채널만 거래 내역 저장
-    for channel, new_state in data.items():
-        old_state = current_status.get(channel, "off")
-        if old_state == "off" and new_state == True:
-            # 채널명을 buyer_id로 변환
-            buyer_id = get_buyer_id_from_channel(channel)
-            # 채널별 소비전력 조회
-            amount = CHANNEL_CONFIG.get(channel)
-            if buyer_id in [1,2,3,4] and amount >= 0:
-                # DB에 거래 내역 저장
-                success, msg, _ = insert_trade_history(buyer_id, amount)
-                if not success:
-                    print(f"저장 실패 : ({channel}) / {msg}")
-                else:
-                    print(f"성공 내역 : ({channel}) / {amount}W")
-            else:
-                print("\n릴레이 제어 : 필수 데이터 입력값 오류")
-                return jsonify({"message": "Invalid input values"}), 400
+    # 거래 내역 DB에 저장
+    success, message, status_code = save_relay_state_changes(data, current_status)
+    return jsonify({"message": message}), status_code
 
-    # 아두이노에 릴레이 제어 전송
-    success, message, status_code = send_to_arduino(data, ARDUINO_URL)
-    if message:
-        return jsonify({"message": message}), status_code
-    else:
-        print("\n릴레이 제어 : 제어 성공")
-        return jsonify({"success": success}), status_code
 
 # === [GET] /api/relay/status ===
 # 기능: 웹(프론트엔드)이 페이지에 처음 접속할 때,
@@ -82,24 +49,10 @@ def get_all_relay_status():
 
     return jsonify(status_map), status_code
 
+# 아두이노 요청 엔드포인트 DB에 저장된 릴레이 채널 정보를 JSON 형식으로 반환
 @relay_bp.route("/api/relay/control", methods=["POST"])
 def control_relay():
-    data = request.get_json() # 웹에서 보낸 JSON 수신 (예: {"A": true, "B": false, ...})
-
-    # 데이터 유효성 검사
-    if not data or "A" not in data or "B" not in data or "C" not in data or "D" not in data:
-        print("\n릴레이 유효성 검사 : 필수 데이터 누락")
-        return jsonify({"message": "Relay : Missing required fields"}), 400
-
-    # 아두이노에 릴레이 제어 전송 (기존 방식 - 주석 처리)
-    # success, message, status_code = send_to_arduino(data, ARDUINO_URL)
-    # if message:
-    #     return jsonify({"message": message}), status_code
-    # else:
-    #     print("\n릴레이 제어 : 제어 성공")
-    #     return jsonify({"success": success}), status_code
-
-    # 아두이노에 DB 상태 응답 (Polling 방식)
+    # DB 최신 상태 조회
     current_status, message, status_code = get_current_relay_status()
     if current_status is None:
         return jsonify({"message": message}), status_code

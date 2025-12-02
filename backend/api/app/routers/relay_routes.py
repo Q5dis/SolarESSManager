@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 from app.services.relay_service import (
     update_relay_status_in_db,
     get_current_relay_status,
@@ -50,15 +50,18 @@ def get_all_relay_status():
     return jsonify(status_map), status_code
 
 # 아두이노 요청 엔드포인트 DB에 저장된 릴레이 채널 정보를 JSON 형식으로 반환
-@relay_bp.route("/api/relay/control", methods=["POST"])
+@relay_bp.route("/api/relay/control", methods=["GET"])
 def control_relay():
     # DB 최신 상태 조회
     current_status, message, status_code = get_current_relay_status()
     if current_status is None:
         return jsonify({"message": message}), status_code
 
-    # 결과 가공 (JSON 형식 변경)
-    status_map = {key: (value == "on") for key, value in current_status.items()}
+    # 결과 가공
+    result = "".join("1" if current_status.get(ch) == "on" else "0" for ch in ["A", "B", "C", "D"])
 
     print("\n릴레이 제어 : DB 상태 응답 전송")
-    return jsonify(status_map), status_code
+    response = make_response(result)
+    response.headers.clear()
+
+    return response

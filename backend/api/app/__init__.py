@@ -20,7 +20,7 @@ def create_app():
     # --- 확장(라이브러리) 초기화 ---
     # CORS 설정을 앱에 적용합니다.
     # "/api/"로 시작하는 모든 주소에 대해 CORS_ORIGINS에서 오는 요청을 허용합니다.
-    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
+    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}}, supports_credentials=True)
 
     # --- 라우트(API 주소) 임포트 ---
     # [중요] 순환 참조(Circular Import) 오류를 방지하기 위해

@@ -7,7 +7,7 @@ from app.services.channels_service import get_optimal_combination, get_available
 channels_bp = Blueprint("channels", __name__)
 
 # 실시간 선택 가능 채널 확인
-@channels_bp.route("/api/channels/available", methods=["POST"])
+@channels_bp.route("/api/channels/available", methods=["GET"])
 def available_channels():
     """
     실시간 선택 가능 채널 확인 및 배터리 보호
@@ -35,7 +35,7 @@ def available_channels():
         return jsonify(result), status_code
 
 # 최적 판매 조합 추천
-@channels_bp.route("/api/channels/optimal", methods=["POST"])
+@channels_bp.route("/api/channels/optimal", methods=["GET"])
 def optimal_combination():
     """
     최적 판매 조합 추천
@@ -53,5 +53,4 @@ def optimal_combination():
     if message:
         return jsonify({"message": message}), status_code
     else:
-        print("\n최적 조합 추천 : 추천 성공")
         return jsonify({'channels': result}), status_code

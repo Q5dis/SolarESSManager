@@ -62,7 +62,7 @@ def get_latest_sensor_data_for_model():
         cursor.execute(sql_prev)
         prev_data = cursor.fetchone()
 
-        # 14시간 전 데이터(yesterday_generation)
+        # 24시간 전 데이터(yesterday_generation)
         sql_yesterday = """
             SELECT avg_solar_w
             FROM sun_data_hourly

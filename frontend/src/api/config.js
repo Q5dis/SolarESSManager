@@ -1,1 +1,2 @@
-export const BACKEND_URL = 'http://192.168.201.110:5001/data';
+// 백엔드 서버 주소
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_SERVER;

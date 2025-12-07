@@ -11,7 +11,7 @@ function Home() {
   useEffect(() => {
     let accumulatedDelta = 0;
     let isScrolling = false;
-    const threshold = 50;
+    const threshold = 100;
 
     const handleWheel = (e) => {
       if (isScrolling) return;
@@ -29,7 +29,7 @@ function Home() {
           setCurrentSection(prev => prev - 1);
         }
         accumulatedDelta = 0;
-        setTimeout(() => { isScrolling = false; }, 800);
+        setTimeout(() => { isScrolling = false; }, 1200);
       }
     };
 
@@ -111,8 +111,9 @@ function Home() {
           <div className="info-box">
             <h3>프로젝트 개요</h3>
             <p>
-              Solar ESS Manager(S.E.M)는 태양광 에너지 저장 시스템을 효율적으로 관리하는
-              스마트 플랫폼입니다. 실시간 모니터링과 최적화 기능을 제공합니다.
+              Solar ESS Manager(S.E.M)는 태양광 에너지 저장 시스템을<br />
+              효율적으로 관리하는 스마트 플랫폼입니다.<br />
+              실시간 모니터링과 최적화 기능을 제공합니다.
             </p>
           </div>
         </div>

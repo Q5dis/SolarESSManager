@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { dataAPI } from '../api/dataAPI';
 import { relayAPI } from '../api/relayAPI';
 import { channelAPI } from '../api/channelAPI';
@@ -167,14 +167,8 @@ function Trade() {
     const newRelayStatus = { ...relayStatus };
     selectedHouses.forEach(h => newRelayStatus[h] = true);
 
-    if (connectionMode === 'real') {
-      try {
-        await relayAPI.control(selectedHouses, 'ON');
-      } catch {
-        alert('⚠️ 백엔드 연결 실패, 가상 모드로 전환됩니다.');
-        setConnectionMode('virtual');
-      }
-    }
+    // 변경됨: relayAPI.control 호출 제거, 로컬 상태만 업데이트
+    // EnvSetting에서만 릴레이를 제어하도록 변경
 
     setRelayStatus(newRelayStatus);
 

@@ -192,11 +192,24 @@ function Trade() {
     localStorage.setItem('tradeHistory', JSON.stringify(newHistory));
 
     const solarData = JSON.parse(localStorage.getItem('solarData') || '{}');
-    solarData.soc = (newEnergyBalance / 10000) * 100;
+    const newSoc = (newEnergyBalance / 10000) * 100;
+    solarData.soc = newSoc;
     solarData.relays = newRelayStatus;
-    // 변경됨: timestamp 업데이트 제거 - 백엔드 타임스탬프 보존
-    // SELL 시 로컬에서 임의로 타임스탬프를 변경하면 실시간 모드 검증에 문제 발생
     localStorage.setItem('solarData', JSON.stringify(solarData));
+
+    // 실시간 모드일 때만 백엔드에 SOC 업데이트
+    if (connectionMode === 'real') {
+      try {
+        await dataAPI.updateSolar(
+          newSoc,
+          solarData.solar_w || 0,
+          solarData.lux || 0
+        );
+      } catch (error) {
+        console.error('백엔드 SOC 업데이트 실패:', error);
+        // 에러가 나도 로컬 거래는 완료된 상태 유지
+      }
+    }
 
     alert(
       `✅ 판매 완료!\n` +

@@ -198,7 +198,8 @@ function Trade() {
     const solarData = JSON.parse(localStorage.getItem('solarData') || '{}');
     solarData.soc = (newEnergyBalance / 10000) * 100;
     solarData.relays = newRelayStatus;
-    solarData.timestamp = new Date().toISOString();
+    // 변경됨: timestamp 업데이트 제거 - 백엔드 타임스탬프 보존
+    // SELL 시 로컬에서 임의로 타임스탬프를 변경하면 실시간 모드 검증에 문제 발생
     localStorage.setItem('solarData', JSON.stringify(solarData));
 
     alert(

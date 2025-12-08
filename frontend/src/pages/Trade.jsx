@@ -3,8 +3,8 @@ import { dataAPI } from '../api/dataAPI';
 import { relayAPI } from '../api/relayAPI';
 import { channelAPI } from '../api/channelAPI';
 import { usePolling } from '../hooks/usePolling';
-import turnoff from '../../img/turnoff.png';
-import turnon from '../../img/turnon.png';
+import turnoff from '../assets/turnoff.png';
+import turnon from '../assets/turnon.png';
 
 function Trade() {
   const [selectedHouses, setSelectedHouses] = useState([]);

@@ -3,8 +3,8 @@ import { dataAPI } from '../api/dataAPI';
 import { relayAPI } from '../api/relayAPI';
 import { channelAPI } from '../api/channelAPI';
 import { usePolling } from '../hooks/usePolling';
-import turnoff from '../../img/turnoff.png';
-import turnon from '../../img/turnon.png';
+import turnoff from '../assets/turnoff.png';
+import turnon from '../assets/turnon.png';
 
 function Trade() {
   const [selectedHouses, setSelectedHouses] = useState([]);
@@ -75,8 +75,14 @@ function Trade() {
       const totalTarget = Object.values(houseEnergy).reduce((sum, val) => sum + val, 0);
 
       const result = await channelAPI.getOptimal(totalTarget);
-      if (result.optimal_channels) {
-        setOptimal(result.optimal_channels);
+      if (result.channels) {
+        // 서버에서 ["A", "C", "D"] 형식으로 반환
+        // 이를 { A: 1, B: 0, C: 1, D: 1 } 형식으로 변환
+        const optimalObj = { A: 0, B: 0, C: 0, D: 0 };
+        result.channels.forEach(channel => {
+          optimalObj[channel] = 1;
+        });
+        setOptimal(optimalObj);
       }
     } catch (error) {
       console.error('Failed to fetch optimal channels:', error);

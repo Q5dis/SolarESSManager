@@ -598,12 +598,6 @@ python model_train_rf.py
 | 최하연 | Hardware Engineer | [@CHY](https://github.com/haayun) |
 
 **프로젝트 기간**: 2024.11 ~ 2025.12
-
-**연락처**:
-- Email: solar-ess@example.com
-- 프로젝트 Repository: [GitHub](https://github.com/Q5dis/SolarESSManager)
-- 데모 사이트: [Vercel](https://solar-ess-manager.vercel.app)
-
 ---
 
 ## 📝 참고 자료
@@ -614,44 +608,12 @@ python model_train_rf.py
 - [Flask Documentation](https://flask.palletsprojects.com/)
 - [scikit-learn Documentation](https://scikit-learn.org/)
 - [Recharts Documentation](https://recharts.org/)
-
-### 개발 가이드
-- [Vercel 배포 가이드](memos/vercel_deployment_presentation.md)
-- [프레젠테이션 대본](memos/presentation_script.txt)
-- [프론트엔드 개발 일지](memos/vercel_deployment_fix_report.md)
-
-### 기술 블로그
-- Mixed Content 해결: HTTPS 프론트엔드 + HTTP 백엔드
-- LocalStorage 기반 상태 동기화 전략
-- Random Forest를 이용한 태양광 발전량 예측
-
----
-
-## 🐛 알려진 이슈
-
-1. **타임스탬프 검증 제거**
-   - 현재: API 응답만 성공하면 실시간 모드
-   - 향후: 데이터 신선도 표시 UI 추가 예정
-
-2. **폴링 간격 최적화**
-   - 현재: 5초 간격 폴링
-   - 향후: WebSocket 실시간 통신 검토
-
-3. **배터리 보호 임계값**
-   - 현재: 10% 고정
-   - 향후: 사용자 설정 가능하도록 개선
-
+  
 ---
 
 ## 📜 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
----
-
-## 🙏 감사의 말
-
-이 프로젝트는 [학교/기관명] 캡스톤 디자인 과정의 일환으로 진행되었습니다. 프로젝트 진행에 도움을 주신 교수님, 멘토님들께 감사드립니다.
 
 ---
 

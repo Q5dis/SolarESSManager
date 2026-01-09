@@ -3,7 +3,7 @@
 **태양광 에너지 저장 시스템 관리 플랫폼**
 실시간 모니터링, ML 기반 발전량 예측, 가상 에너지 거래 시뮬레이션
 
-[![Deploy with Vercel](https://solar-ess-manager.vercel.app)
+https://solar-ess-manager.vercel.app/
 
 ---
 
